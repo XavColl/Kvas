@@ -4,6 +4,19 @@ $(document).ready(function(){
         return false;
     });
 
+    const canvas = $('canvas')[0]
+    const ctx = canvas.getContext('2d')
+
+    canvas.width = window.innerWidth
+    canvas.height = window.innerHeight
+    let listBalls = []
+    let listMobs = []
+    let lapsMob = 0
+    let lapsBall = 0
+    let score = 0
+    let speedMob = 5
+    let hpMob = 5
+
     class Mob {
         constructor(type, speed, hp, position){
             this.position = position
@@ -93,6 +106,7 @@ $(document).ready(function(){
             this.height = 6
             this.speed = 8
             this.range = 300
+            this.damage = 5
         }
         draw() {
             ctx.fillStyle = 'red'
@@ -133,17 +147,7 @@ $(document).ready(function(){
     
     
 
-    const canvas = $('canvas')[0]
-    const ctx = canvas.getContext('2d')
-
-    canvas.width = window.innerWidth
-    canvas.height = window.innerHeight
-    let listBalls = []
-    let listMobs = []
-    let lapsMob = 0
-    let lapsBall = 0
-    let score = 0
-    let speedMob = 5
+    
 
    
     class Player {
@@ -197,22 +201,22 @@ $(document).ready(function(){
 
 
     const createMob = () => {
-        if(lapsMob>50){
+        if(lapsMob>150){
             const spd = speedMob
+            const hp = hpMob
             let x = Math.random() * canvas.width
             let y = Math.random() * canvas.height
 
 
-            let positionMob = {
-                x,
-                y
-            }
+            let positionMob = {x,y}
 
-            const mob = new Mob('fire',spd,10,positionMob)
+            const mob = new Mob('fire',spd,hp,positionMob)
 
             listMobs.push(mob)
             lapsMob = 0
             speedMob += 0.3
+            hpMob ++
+            player.speed += 0.5
         }
         
     }
@@ -256,16 +260,25 @@ $(document).ready(function(){
         listMobs = arr
     }
 
+    const dealDamage = (ball, mob) => {
+        mob.hp -= ball[0].damage
+        deleteBall(ball)
+        if(mob.hp <= 0){
+            deleteMob(mob)
+            score ++
+            console.log(score)
+        }
+    }
+
     const checkCollisions = () => {
         listMobs.forEach(mobs => {
             listBalls.forEach(balls => {
                 try{
                     if(mobs.position.x <= (balls[0].position.x + balls[0].width) && (mobs.position.x + mobs.width)  >= balls[0].position.x
                     && mobs.position.y <= (balls[0].position.y + balls[0].height) && (mobs.position.y + mobs.height)  >= balls[0].position.y){
-                        score ++
-                        console.log(score)
-                        deleteBall(balls)
-                        deleteMob(mobs)
+                        //deleteBall(balls)
+                        dealDamage(balls, mobs)
+                        //deleteMob(mobs)
                     }
                 }catch{}
             })
