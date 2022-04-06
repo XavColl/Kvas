@@ -321,17 +321,33 @@ $(document).ready(function(){
         player.update()
 
         if(player.keys.up){
-            player.velocity.y = -player.speed
+            if(player.keys.right || player.keys.left){
+                player.velocity.y = -(player.speed / 2)
+            }else{
+                player.velocity.y = -player.speed
+            }
         }else if(player.keys.down){
-            player.velocity.y = player.speed
+            if(player.keys.right || player.keys.left){
+                player.velocity.y = player.speed / 2
+            }else{
+                player.velocity.y = player.speed
+            }
         }else {
             player.velocity.y = 0
         }
 
         if(player.keys.left){
-            player.velocity.x = -player.speed
+            if(player.keys.up || player.keys.down){
+                player.velocity.x = -(player.speed / 2)
+            }else{
+                player.velocity.x = -player.speed
+            }
         }else if(player.keys.right){
-            player.velocity.x = player.speed
+            if(player.keys.up || player.keys.down){
+                player.velocity.x = player.speed/2
+            }else {
+                player.velocity.x = player.speed
+            }
         }else {
             player.velocity.x = 0
         }
@@ -377,9 +393,6 @@ $(document).ready(function(){
             //right
             player.keys.right = true
         }
-        else if(event.keyCode === 32){
-            sendBall()
-        }
     })
 
     addEventListener('keyup', (event) => {
@@ -400,10 +413,9 @@ $(document).ready(function(){
             //right
             player.keys.right = false
         }
-        else if(event.keyCode === 32){
-        }
     })
 
     addEventListener("mousemove", (e) => { getCursorPosition(canvas, e) })
+    addEventListener("click", () => { sendBall() })
 
 })
